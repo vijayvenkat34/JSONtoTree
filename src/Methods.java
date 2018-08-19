@@ -23,36 +23,52 @@ public class Methods {
 	
 	void printJSONObject(JSONObject obj,String parent){
 		
+		JSONObject node = new JSONObject();//obj
+		JSONArray listChild = new JSONArray();//arr of child
+		
 		for(Object key : obj.keySet()){
 			
-			//System.out.println("\n"+obj.keySet().toString());
+			
 			String keyStr = (String)key;
 			Object keyvalue = obj.get(keyStr);
-			//String temp = keyvalue.toString();
 			
-			//System.out.println(keyStr);
-			
+			JSONObject child = new JSONObject();//child obj
 			
 			if(keyvalue instanceof JSONObject){
-				
+				//System.out.println(keyStr);
+			
 				printJSONObject((JSONObject)keyvalue,keyStr);
+				//System.out.println(keyStr);
+
 				
 			}
 			else if(keyvalue instanceof JSONArray){
 				
-				if(((JSONArray) keyvalue).get(0) instanceof JSONObject)
-					
+				if(((JSONArray) keyvalue).get(0) instanceof JSONObject){
+					node.put("name", keyStr);
 					printJSONObject((JSONObject) ((JSONArray) keyvalue).get(0),keyStr);
-				
-				//System.out.println(((JSONArray) keyvalue).get(0));
+					//System.out.println(keyStr);
+				}else{
+					//leaf
+					System.out.println("leaf : "+keyStr);
+				}
+			}else{
+				//leaf
+				//System.out.println("leaf : "+keyStr);
+				child.put("name", keyStr);
 			}
-			
-			Node n = new Node();
-			n.data = keyStr;
-			n.parent = parent;
-			
-			System.out.println(n.data+" , "+n.parent);
-			
+			listChild.add(child);
+		}
+		//System.out.println("\nend of obj ");
+		node.put("children", listChild);
+		
+		System.out.println(node.toString());
+	}
+	
+	void printNodeList(){
+		
+		for(Node n : Node.nodeList){
+			System.out.println(n.data.toString()+" , "+n.parent+" , "+n.isLeaf);
 		}
 	}
 }

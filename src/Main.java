@@ -18,7 +18,7 @@ public class Main {
 		
 		JSONObject obj = m.readJSON("content.json");
 		m.printJSONObject(obj,null);
-		
+		m.printNodeList();
 	
 	}
 	

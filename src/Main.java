@@ -16,9 +16,10 @@ public class Main {
 
 		Methods m = new Methods();
 		
-		JSONObject obj = m.readJSON("content.json");
-		m.printJSONObject(obj,null);
-		m.printNodeList();
+		m.readJSON("content.json");
+		m.printJSONObject(m.getJSONObject(),false);
+		m.printObj();
+		//m.printNodeList();
 	
 	}
 	

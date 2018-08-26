@@ -1,5 +1,6 @@
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -8,67 +9,78 @@ import org.json.simple.parser.ParseException;
 
 public class Methods {
 	
-	JSONObject readJSON(String filename){
+	JSONObject obj;
+	String resultObj;
+	static ArrayList<JSONObject> childList = new ArrayList(); //used by printJSONObject
+	static Node result = new Node(); //final JSON String
+	
+	Methods(){
+		obj = new JSONObject();
+		result.setName("root");
+	}
+	
+	public JSONObject getJSONObject(){
+		return this.obj;
+	}
+	
+	public void printObj(){
+		System.out.println(result.getNode());
+	}
+	void readJSON(String filename){
 		JSONParser parser = new JSONParser();
 		
-		JSONObject obj = null;
 		try {
 			obj = (JSONObject) parser.parse(new FileReader(filename));
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return obj;
+
 	}
 	
-	void printJSONObject(JSONObject obj,String parent){
+	void printJSONObject(JSONObject obj,boolean isRecursion){
 		
-		JSONObject node = new JSONObject();//obj
-		JSONArray listChild = new JSONArray();//arr of child
+		childList.clear();
 		
 		for(Object key : obj.keySet()){
-			
 			
 			String keyStr = (String)key;
 			Object keyvalue = obj.get(keyStr);
 			
-			JSONObject child = new JSONObject();//child obj
+			Node n = new Node();
+			n.setName(keyStr);
+			
+			//System.out.println(keyStr);
 			
 			if(keyvalue instanceof JSONObject){
-				//System.out.println(keyStr);
-			
-				printJSONObject((JSONObject)keyvalue,keyStr);
-				//System.out.println(keyStr);
-
+				printJSONObject((JSONObject)keyvalue,true);
+				//loop childList
+				for(JSONObject e : childList){
+					n.setChildren(e);
+				}
 				
 			}
 			else if(keyvalue instanceof JSONArray){
-				
+				n.setName("["+keyStr+"]");
 				if(((JSONArray) keyvalue).get(0) instanceof JSONObject){
-					node.put("name", keyStr);
-					printJSONObject((JSONObject) ((JSONArray) keyvalue).get(0),keyStr);
-					//System.out.println(keyStr);
-				}else{
-					//leaf
-					System.out.println("leaf : "+keyStr);
+	
+					printJSONObject((JSONObject) ((JSONArray) keyvalue).get(0),true);
+					//loop childList
+					for(JSONObject e : childList){
+						n.setChildren(e);
+					}
 				}
-			}else{
-				//leaf
-				//System.out.println("leaf : "+keyStr);
-				child.put("name", keyStr);
 			}
-			listChild.add(child);
+			
+			childList.add(n.getNode());
+			
+			if(!isRecursion)//prints top level leaf node
+				result.setChildren(n.getNode());
 		}
-		//System.out.println("\nend of obj ");
-		node.put("children", listChild);
+	
 		
-		System.out.println(node.toString());
+	
 	}
 	
-	void printNodeList(){
-		
-		for(Node n : Node.nodeList){
-			System.out.println(n.data.toString()+" , "+n.parent+" , "+n.isLeaf);
-		}
-	}
+
 }
